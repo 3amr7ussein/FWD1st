@@ -7,7 +7,8 @@ var express_1 = __importDefault(require("express"));
 var app = (0, express_1.default)();
 var port = 3000;
 var index_1 = __importDefault(require("./routes/index"));
-app.use('/api', index_1.default);
+app.use('/', index_1.default);
 app.listen(port, function () {
     console.log('Server Started Successfully');
 });
+exports.default = app;

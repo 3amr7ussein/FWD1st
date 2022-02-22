@@ -6,8 +6,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var imageRoute_1 = __importDefault(require("./api/imageRoute"));
 var routes = express_1.default.Router();
-routes.get('/', function (req, res) {
-    res.send('main api route');
-});
 routes.use('/', imageRoute_1.default);
 exports.default = routes;

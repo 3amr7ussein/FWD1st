@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import fs from 'fs';
 import sharp from 'sharp';
+import { imgResize } from '../utils/resizeImg';
 const path = require('path');
 
 export function isOriginalImgExists(filename: string | undefined): boolean {
@@ -27,29 +28,18 @@ export function isResizedImgExists(
   return fs.existsSync(resizedImagePath);
 }
 
-function imageResize(filename: string, width: number, height: number): void {
-  //function that accept file name of image , width and height
-  //serach for image in full folder and resize it
-
-  sharp(`${path.resolve('./')}/assets/full/${filename}.jpg`)
-    .resize(width, height)
-    .toFile(
-      `${path.resolve('./')}/assets/thumb/${filename}${width}${height}.jpg`,
-      function (err) {
-        if (err) console.log(err);
-      }
-    );
-}
-
 async function imageProcessing(
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void> {
+) {
   const filename = req.query.filename as string;
   const width = req.query.width as string;
   const height = req.query.height as string;
-
+  let originalImgPath = `${path.resolve('./')}/assets/full/${filename}.jpg`;
+  let resizedImgPath = `${path.resolve(
+    './'
+  )}/assets/thumb/${filename}${width}${height}.jpg`;
   try {
     //validate if parameters exist
 
@@ -59,8 +49,13 @@ async function imageProcessing(
         if (isResizedImgExists(filename, width, height) == false) {
           if (isOriginalImgExists(filename)) {
             //create resized images
-            await imageResize(filename, +width, +height);
-            next();
+            console.log('Creating Resized Image');
+            await imgResize(originalImgPath, +width, +height)
+              .toBuffer()
+              .then((data) => {
+                fs.writeFileSync(resizedImgPath, data);
+                res.end(data);
+              });
           }
         }
       }
@@ -70,5 +65,6 @@ async function imageProcessing(
   } catch (e) {
     next(e);
   }
+  next();
 }
 export default imageProcessing;
