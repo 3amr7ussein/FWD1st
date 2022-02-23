@@ -1,4 +1,4 @@
-Project Scripts
+
 
 //First of all go to directory firstProject in your terminal
 
