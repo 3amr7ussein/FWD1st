@@ -39,59 +39,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isResizedImgExists = exports.isOriginalImgExists = void 0;
 var fs_1 = __importDefault(require("fs"));
 var resizeImg_1 = require("../utils/resizeImg");
+var fileExistCheckers_1 = require("../utils/fileExistCheckers");
 var path = require('path');
-function isOriginalImgExists(filename) {
-    // check if original image exists in full directory
-    var originalImagePath = "".concat(path.resolve('./'), "/assets/full/").concat(filename, ".jpg");
-    return fs_1.default.existsSync(originalImagePath);
-}
-exports.isOriginalImgExists = isOriginalImgExists;
-function isResizedImgExists(filename, width, height) {
-    //check if resized image already exist in thumb directory
-    var resizedImagePath = "".concat(path.resolve('./'), "/assets/thumb/").concat(filename).concat(width).concat(height, ".jpg");
-    return fs_1.default.existsSync(resizedImagePath);
-}
-exports.isResizedImgExists = isResizedImgExists;
 function imageProcessing(req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var filename, width, height, originalImgPath, resizedImgPath, e_1;
+        var fileName, width, height, originalImgPath, resizedImgPath_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    filename = req.query.filename;
+                    fileName = req.query.filename;
                     width = req.query.width;
                     height = req.query.height;
-                    originalImgPath = "".concat(path.resolve('./'), "/assets/full/").concat(filename, ".jpg");
-                    resizedImgPath = "".concat(path.resolve('./'), "/assets/thumb/").concat(filename).concat(width).concat(height, ".jpg");
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 6, , 7]);
-                    if (!(filename != '')) return [3 /*break*/, 4];
-                    if (!(width && height)) return [3 /*break*/, 3];
-                    if (!(isResizedImgExists(filename, width, height) == false)) return [3 /*break*/, 3];
-                    if (!isOriginalImgExists(filename)) return [3 /*break*/, 3];
+                    originalImgPath = path.join(path.resolve('./'), 'assets', 'full', "".concat(fileName, ".jpg"));
+                    if (!(fileName != '')) return [3 /*break*/, 3];
+                    if (!(width && height)) return [3 /*break*/, 2];
+                    resizedImgPath_1 = path.join(path.resolve('./'), 'assets', 'thumb', "".concat(fileName).concat(width).concat(height, ".jpg"));
+                    if (!((0, fileExistCheckers_1.isResizedImgExists)(resizedImgPath_1) == false)) return [3 /*break*/, 2];
+                    if (!(0, fileExistCheckers_1.isOriginalImgExists)(originalImgPath)) return [3 /*break*/, 2];
                     //create resized images
                     console.log('Creating Resized Image');
                     return [4 /*yield*/, (0, resizeImg_1.imgResize)(originalImgPath, +width, +height)
                             .toBuffer()
                             .then(function (data) {
-                            fs_1.default.writeFileSync(resizedImgPath, data);
+                            fs_1.default.writeFileSync(resizedImgPath_1, data);
                             res.end(data);
                         })];
-                case 2:
+                case 1:
                     _a.sent();
-                    _a.label = 3;
-                case 3: return [3 /*break*/, 5];
-                case 4: throw new Error("Image File (".concat(filename, ".jpg) Is Not Exists"));
-                case 5: return [3 /*break*/, 7];
-                case 6:
-                    e_1 = _a.sent();
-                    next(e_1);
-                    return [3 /*break*/, 7];
-                case 7:
+                    _a.label = 2;
+                case 2: return [3 /*break*/, 4];
+                case 3:
+                    res.end("Image File (".concat(fileName, ".jpg) Is Not Exists"));
+                    _a.label = 4;
+                case 4:
                     next();
                     return [2 /*return*/];
             }

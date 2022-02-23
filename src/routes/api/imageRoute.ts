@@ -6,7 +6,7 @@ const imageApi = express.Router();
 
 //api to get the url params and pass the it to utility function the resize the image and send the new image
 imageApi.use(imageProcessing);
-imageApi.get('/image', (req: Request, res: Response) => {
+imageApi.get('/', (req: Request, res: Response) => {
   const fileName = req.query.filename as string;
   const width = req.query.width as string;
   const height = req.query.height as string;
