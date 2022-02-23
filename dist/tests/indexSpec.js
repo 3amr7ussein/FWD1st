@@ -39,15 +39,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var path_1 = __importDefault(require("path"));
-var sharp_1 = __importDefault(require("sharp"));
 var supertest_1 = __importDefault(require("supertest"));
 var __1 = __importDefault(require("../"));
-var fileExistCheckers_1 = require("../utils/fileExistCheckers");
-var resizeImg_1 = require("../utils/resizeImg");
 var request = (0, supertest_1.default)(__1.default);
 describe('Test Image End Point Responses', function () {
-    var url = "http://localhost:3000/image?filename=Udacity";
+    // let url = `http://localhost:3000/image?filename=Udacity`;
     it('Test the api endpoint ', function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
@@ -60,17 +56,4 @@ describe('Test Image End Point Responses', function () {
             }
         });
     }); });
-    it('Expect image api to respond with error message to user', function () {
-        var response = request.get(url);
-        expect(response.send).toBe('There is no Such file with name Udacity.jpg');
-    });
-});
-describe('Image functions', function () {
-    var originalImgPath = path_1.default.join(path_1.default.resolve('./'), 'assets', 'full', "fjord.jpg");
-    it('Expect original image file to be found ', function () {
-        expect((0, fileExistCheckers_1.isOriginalImgExists)(originalImgPath)).toBeTrue();
-    });
-    it('Expect image resize to return transform', function () {
-        expect((0, resizeImg_1.imgResize)(originalImgPath, 400, 400)).toBeInstanceOf(sharp_1.default);
-    });
 });
