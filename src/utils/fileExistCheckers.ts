@@ -1,5 +1,4 @@
 import fs, { PathLike } from 'fs';
-import path from 'path';
 
 export function isResizedImgExists(filePath: PathLike): boolean {
   //check if resized image already exist in thumb directory

@@ -7,7 +7,7 @@ export function imgResize(
   height: number
 ): Sharp {
   const readStream = fs.createReadStream(path);
-  let transform = sharp();
+  const transform = sharp();
   transform.resize(width, height);
   transform.toFormat('jpg');
   return readStream.pipe(transform);

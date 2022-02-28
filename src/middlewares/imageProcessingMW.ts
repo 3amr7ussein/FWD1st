@@ -1,22 +1,21 @@
 import { NextFunction, Request, Response } from 'express';
 import fs, { PathLike } from 'fs';
-import sharp from 'sharp';
 import { imgResize } from '../utils/resizeImg';
 import {
   isResizedImgExists,
   isOriginalImgExists,
 } from '../utils/fileExistCheckers';
-const path = require('path');
+import path from 'path';
 
 async function imageProcessing(
   req: Request,
   res: Response,
   next: NextFunction
-) {
+): Promise<void> {
   const fileName = req.query.filename as string;
   const width = req.query.width as string;
   const height = req.query.height as string;
-  let originalImgPath = path.join(
+  const originalImgPath = path.join(
     path.resolve('./'),
     'assets',
     'full',
@@ -25,17 +24,17 @@ async function imageProcessing(
   if (fileName != '') {
     //if file name exists but neither width nor height do nothing but next
     if (width && height) {
-      let resizedImgPath: PathLike = path.join(
+      const resizedImgPath: PathLike = path.join(
         path.resolve('./'),
         'assets',
         'thumb',
         `${fileName}${width}${height}.jpg`
       );
 
-      if (isResizedImgExists(resizedImgPath) == false) {
+      if (+width <= 0 || +height <= 0) {
+        next(new Error('Invalid Parameters width & height'));
+      } else if (isResizedImgExists(resizedImgPath) == false) {
         if (isOriginalImgExists(originalImgPath)) {
-          //create resized images
-          console.log('Creating Resized Image');
           await imgResize(originalImgPath, +width, +height)
             .toBuffer()
             .then((data) => {
@@ -47,6 +46,7 @@ async function imageProcessing(
     }
   } else {
     res.end(`Image File (${fileName}.jpg) Is Not Exists`);
+    throw new Error(`Image File (${fileName}.jpg) Is Not Exists`);
   }
   next();
 }

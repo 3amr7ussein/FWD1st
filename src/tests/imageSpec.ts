@@ -5,7 +5,7 @@ import { isOriginalImgExists } from '../utils/fileExistCheckers';
 import { imgResize } from '../utils/resizeImg';
 
 describe('Image functions', () => {
-  let originalImgPath = path.join(
+  const originalImgPath = path.join(
     path.resolve('./'),
     'assets',
     'full',
