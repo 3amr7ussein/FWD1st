@@ -6,9 +6,13 @@ export function imgResize(
   width: number,
   height: number
 ): Sharp {
-  const readStream = fs.createReadStream(path);
-  const transform = sharp();
-  transform.resize(width, height);
-  transform.toFormat('jpg');
-  return readStream.pipe(transform);
+  try {
+    const readStream = fs.createReadStream(path);
+    const transform = sharp();
+    transform.resize(width, height);
+    transform.toFormat('jpg');
+    return readStream.pipe(transform);
+  } catch (e) {
+    throw new Error('Failed to process Image');
+  }
 }
