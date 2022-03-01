@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint --ext .js,.ts --ignore-path .eslintignore  .",
-    "lint:fix": "eslint . --fix",
-    "prettier": "prettier --config .prettierrc '*.js' --write",
+    "lint": "eslint --ext .ts  .",
+    "lint:fix": "eslint ./**/*.ts --fix",
+    "prettier": "prettier --config .prettierrc ./**/*.ts --write",
     "fix": "npm run prettier && npm run lint",
     "test": "npm run build && npm run jasmine",
     "build": "npx tsc",

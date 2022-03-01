@@ -6,6 +6,7 @@ import {
   isOriginalImgExists,
 } from '../utils/fileExistCheckers';
 import path from 'path';
+import inputsCheaker, { inputsResponse } from '../utils/inputChecker';
 
 async function imageProcessing(
   req: Request,
@@ -21,34 +22,34 @@ async function imageProcessing(
     'full',
     `${fileName}.jpg`
   );
-  try {
-    if (fileName != '') {
-      //if file name exists but neither width nor height do nothing but next
-      if (width && height) {
-        const resizedImgPath: PathLike = path.join(
-          path.resolve('./'),
-          'assets',
-          'thumb',
-          `${fileName}${width}${height}.jpg`
-        );
+  const paramsChecker: inputsResponse = inputsCheaker(fileName, width, height);
 
-        if (+width <= 0 || +height <= 0) {
-          throw new Error('Invalid Parameters width , height');
-        } else if (isResizedImgExists(resizedImgPath) == false) {
-          if (isOriginalImgExists(originalImgPath)) {
-            await imgResize(originalImgPath, +width, +height)
-              .toBuffer()
-              .then((data) => {
-                fs.writeFileSync(resizedImgPath, data);
-                res.end(data);
-              });
-          } else throw new Error(`Image File (${fileName}.jpg) Is Not Exists`);
+  if (!paramsChecker.flag) {
+    res.send(paramsChecker.message);
+  } else {
+    if (width && height) {
+      const resizedImgPath: PathLike = path.join(
+        path.resolve('./'),
+        'assets',
+        'thumb',
+        `${fileName}${width}${height}.jpg`
+      );
+
+      if (!isResizedImgExists(resizedImgPath)) {
+        if (isOriginalImgExists(originalImgPath)) {
+          //create resized images
+          await imgResize(originalImgPath, +width, +height)
+            .toBuffer()
+            .then((data) => {
+              fs.writeFileSync(resizedImgPath, data);
+              res.end(data);
+            });
+        } else {
+          res.end(`Image File (${fileName}.jpg) Is Not Exists`);
         }
       }
-      next();
     }
-  } catch (e) {
-    next(e);
+    next();
   }
 }
 export default imageProcessing;
